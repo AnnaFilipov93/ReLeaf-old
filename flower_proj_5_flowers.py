@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 86,
    "metadata": {
     "jupyter": {
      "source_hidden": true
@@ -18,12 +18,14 @@
     "from keras.models import Sequential, load_model\n",
     "from keras.layers import Activation, Dropout,Flatten,Conv2D,MaxPool2D,Dense\n",
     "from keras.preprocessing import image\n",
-    "from sklearn.metrics import confusion_matrix, classification_report"
+    "from sklearn.metrics import confusion_matrix, classification_report\n",
+    "from keras.callbacks import CSVLogger\n",
+    "import pandas as pd\n"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 78,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +38,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 90,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -99,7 +101,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 80,
    "metadata": {},
    "outputs": [
     {
@@ -116,7 +118,7 @@
        "{'daisy': 0, 'dandelion': 1, 'rose': 2, 'sunflower': 3, 'tulip': 4}"
       ]
      },
-     "execution_count": 17,
+     "execution_count": 80,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -138,23 +140,32 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 74,
+   "execution_count": 91,
    "metadata": {},
    "outputs": [
     {
-     "ename": "IndentationError",
-     "evalue": "unexpected indent (<ipython-input-74-721f6eb95bbe>, line 4)",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[1;36m  File \u001b[1;32m\"<ipython-input-74-721f6eb95bbe>\"\u001b[1;36m, line \u001b[1;32m4\u001b[0m\n\u001b[1;33m    validation_data=test_img, validation_steps=12)\u001b[0m\n\u001b[1;37m    ^\u001b[0m\n\u001b[1;31mIndentationError\u001b[0m\u001b[1;31m:\u001b[0m unexpected indent\n"
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 1/2\n",
+      "100/100 [==============================] - 140s 1s/step - loss: 1.4321 - acc: 0.3409 - val_loss: 1.2821 - val_acc: 0.3420\n",
+      "Epoch 2/2\n",
+      "100/100 [==============================] - 173s 2s/step - loss: 1.2293 - acc: 0.4719 - val_loss: 1.1992 - val_acc: 0.5177\n"
      ]
     }
    ],
    "source": [
     "###~~~training the model~~~###\n",
     "\n",
-    "results=model.fit_generator(train_img,epochs=200, steps_per_epoch=100,\n",
-    "                            validation_data=test_img, validation_steps=12)"
+    "#saving the data within external csv file for further use\n",
+    "filename='model_history.csv'\n",
+    "csv_logger=CSVLogger(filename, separator=',', append=False)\n",
+    "\n",
+    "#training\n",
+    "results=model.fit_generator(train_img,epochs=200, steps_per_epoch=75,\n",
+    "                            validation_data=test_img, validation_steps=12,callbacks=[csv_logger])\n",
+    "\n",
+    "log_data = pd.read_csv(filename, sep=',', engine='python')"
    ]
   },
   {
@@ -420,6 +431,13 @@
     "\n",
     "model=load_model('five_flowers_model.h5')\n"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   },
   {
    "cell_type": "code",
